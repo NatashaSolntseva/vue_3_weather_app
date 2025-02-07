@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { WEATHER_API_KEY, WEATHER_API_BASE_URL } from './const'
 import type { WeatherData } from './types'
+import { translateText } from './translateService'
 
 export const fetchWeatherFromWeatherAPI = async (
   lat: number,
@@ -14,13 +15,13 @@ export const fetchWeatherFromWeatherAPI = async (
         days: 1,
         aqi: 'no',
         alerts: 'no',
-        lang: 'en',
       },
     })
 
     if (!response.data || !response.data.current) {
       throw new Error('Invalid response format')
     }
+    const translatedLocation = await translateText(response.data.location.name)
 
     return {
       temp: Math.round(response.data.current.temp_c),
@@ -28,7 +29,7 @@ export const fetchWeatherFromWeatherAPI = async (
       maxTemp: Math.round(response.data.forecast.forecastday[0].day.maxtemp_c),
       description: response.data.current.condition.text,
       icon: `https:${response.data.current.condition.icon}`,
-      location: response.data.location.name,
+      location: translatedLocation,
     }
   } catch (error) {
     throw new Error('Failed to fetch weather data')
