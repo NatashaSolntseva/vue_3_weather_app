@@ -14,6 +14,7 @@ export const fetchWeatherFromWeatherAPI = async (
         days: 1,
         aqi: 'no',
         alerts: 'no',
+        lang: 'en',
       },
     })
 
