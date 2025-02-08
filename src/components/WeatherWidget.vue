@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import { useLocation } from '@/hooks/useLocation'
 import { useWeather } from '@/hooks/useWeather'
 import { useGradient } from '@/hooks/useGradient'
+import { useBackgroundImage } from '@/hooks/useBackgroundImage'
 
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import RetryButton from '@/components/RetryButton.vue'
@@ -21,12 +22,14 @@ const {
 
 const {
   weatherData,
-  backgroundImage,
+
   getWeather,
   isLoading: isWeatherLoading,
   isError: isWeatherError,
   errorMessage: weatherError,
 } = useWeather()
+
+const { backgroundImage, getBackgroundImage, isLoading: isBackgroundLoading } = useBackgroundImage()
 
 onMounted(getLocation)
 
@@ -36,13 +39,19 @@ watch(coordinates, (newCoords) => {
   }
 })
 
+watch(weatherData, (newData) => {
+  if (newData) {
+    getBackgroundImage(newData.location)
+  }
+})
+
 const { gradient } = useGradient(weatherData)
 </script>
 
 <template>
   <div class="w-[243px] rounded-2xl shadow-[0_8px_16px_rgba(0,0,0,0.25)] overflow-hidden">
     <div
-      v-if="isLocationLoading || isWeatherLoading"
+      v-if="isLocationLoading || isWeatherLoading || isBackgroundLoading"
       class="flex items-center justify-center h-[320px]"
     >
       <LoadingSpinner />
